@@ -1,0 +1,6 @@
+Instructions:
+click the mouse to draw cells on
+press any key to pause and unpause
+enjoy!
+
+note: to redefine resolution and blocksize, change the constants defined in the top of the C file
