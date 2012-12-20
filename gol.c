@@ -1,9 +1,13 @@
 #include <stdio.h> 
 #include "SDL/SDL.h"
-#define WIDTH 1000
+#include <pthread.h>
+#include <errno.h>
+
+#define WIDTH 800
 #define HEIGHT 600
 #define DEPTH 32
 
+#define MOD(x,y) (x < 0 ? y + x : x >= y? y - x :  x)
 
 void setpixel(SDL_Surface *screen, int x, int y, Uint8 r, Uint8 g, Uint8 b)
 {
@@ -60,8 +64,7 @@ void DrawScreen(SDL_Surface* screen)
 {
     if(SDL_MUSTLOCK(screen))
     {
-        if (SDL_LockSurface(screen) < 0)
-        {return;}
+        if (SDL_LockSurface(screen) < 0) return;
     }
 
 
@@ -69,19 +72,6 @@ void DrawScreen(SDL_Surface* screen)
     {
         SDL_UnlockSurface(screen);
     }
-}
-
-int ourmod(int num, int den)
-{
-    if (num < 0)
-    {
-        return den + num;
-    }
-    else if (num >= den)
-    {
-        return den - num;
-    }
-    return num;
 }
 
 int main( int argc, char* argv[])
@@ -98,19 +88,15 @@ int main( int argc, char* argv[])
     int size =3;
     int dx = WIDTH/size;
     int dy = HEIGHT/size;
-    int grid[dx][dy];
-    int new[dx][dy];
-    int (*gr)[dy] = grid;
-    int (*nw)[dy] = new;
+    int grid[dy][dx];
+    int new[dy][dx];
+    int (*gr)[dx] = grid;
+    int (*nw)[dx] = new;
     int (*temp)[dy];
     int black = -1;//black = 1, -1 = red
     int i,j;
-    for(i=0;i<dx;i++)
-    {
-        for(j=0;j<dy;j++)
-        {
-            grid[i][j] = 0;
-        }
+    for(i=0;i<dy;i++){
+        for(j=0;j<dx;j++) grid[i][j] = 0;
     }
     
     
@@ -138,56 +124,52 @@ int main( int argc, char* argv[])
               }
          }
         if(mousedown == 1){
-            gr[(mx/size)][(my/size)] = 1;
+            gr[(my/size)][(mx/size)] = 1;
             //uncomment this line for some wonderous things 
-            //for(i=my;i<(200)+my;i=i+size){gr[mx/size][i/size]=1;rect(screen,(mx/size)*size,(i/size)*size,size,size,250,0,0);}
+            //for(i=my;i<(400)+my;i=i+size){gr[i/size][mx/size]=1;rect(screen,(mx/size)*size,(i/size)*size,size,size,250,0,0);}
             rect(screen,(mx/size)*size,(my/size)*size,size,size,250,0,0);
          }
      
      if (pause == -1){
-     for(i=0;i<dx;i++)
+     for(i=0;i<dy;i++)
      {
-        for(j=0;j<dy;j++)
+        int count;
+        int right = 0;
+        //initialize
+        int left = gr[dy][dx] + gr[0][dx] + gr[1][dx];
+        int middle = gr[dy][0] + gr[0][0] + gr[1][0];
+
+        for(j=0;j<dx;j++)
         {
-            //need to count the neighbors
-            int inneri,innerj;
-            int count = 0;
-            for(inneri=i-1;inneri<i+2;inneri++)
-            {
-                for(innerj=j-1;innerj<j+2;innerj++)
-                {
+            right = gr[MOD(i-1,dy)][MOD(j+1,dx)] + gr[i][MOD(j+1,dx)] + gr[MOD(i+1,dy)][MOD(j+1,dx)];
 
-                    if (! (innerj == j && inneri == i))
-                    {
-                    if (gr[ourmod(inneri,(WIDTH/size))][ourmod(innerj,(HEIGHT/size))]== 1){count++;}
-                    }
-                }
-
-            }
-
+            int this = gr[i][j];
+            count = left + middle + right - this;
 
             //change the state of old depending 
-             if (gr[i][j] == 1)
+             if (this == 1)
              {
-                if (count==3 ||count == 2)//|| count ==4||count==6||count==7||count==8) 
+                if (count==3 || count == 2)//|| count ==4||count==6||count==7||count==8) 
                    {nw[i][j] = 1;}
                 else 
                 {
                     nw[i][j]=0;
-                    rect(screen,i*size,j*size,size,size,0,0,0);
+                    rect(screen,j*size,i*size,size,size,0,0,0);
                 }
              }
             else
             {
-                if (count==3)// || count==6 ||count==7||count==8) 
+                if (count==3  )//|| count==6 ||count==7||count==8) 
                 {
-                    rect(screen,i*size,j*size,size,size,250,0,0);
+                    rect(screen,j*size,i*size,size,size,250,0,0);
                     nw[i][j] = 1;}
                 else 
                 {
                     nw[i][j]=0;
                 }
             }
+            left = middle;
+            middle = right;
         }
      }
     
