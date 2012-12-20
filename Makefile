@@ -1,12 +1,18 @@
 CC = gcc
 GOL = gol
-CFLAGS = -g -Wall -Wextra -std=c99 -pthread -D_GNU_SOURCE
+GOLTHREAD = gol-threaded
+CFLAGS = -g -Wall -Wextra -std=c99 -D_GNU_SOURCE -pthread
 CFLAGS += -lSDL
 
-GOL_OBJS = gol.c
+GOL_OBJS = gol.c gol-threaded.c
 
-gol: $(GOL_OBJS)
-	$(CC) $(CFLAGS) -o $(GOL) $(GOL_OBJS)
+all: gol gol-threaded
+
+gol: gol.c
+	$(CC) $(CFLAGS) -o $(GOL) gol.c
+
+gol-threaded: gol-threaded.c
+	$(CC) $(CFLAGS) -o $(GOLTHREAD) gol-threaded.c
 
 clean: 
 	rm -f gol gol.o

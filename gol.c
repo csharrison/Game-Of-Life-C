@@ -7,9 +7,9 @@
 //#define HEIGHT 600
 #define DEPTH 32
 
-#define GWIDTH 256
-#define GHEIGHT 200
-#define SIZE 3
+#define GWIDTH (256*3)
+#define GHEIGHT 800
+#define SIZE 1
 #define WIDTH (256*3)//200*3
 #define MOD(x,y) (x < 0 ? y + x : x % y)
 
@@ -113,10 +113,9 @@ int main( int argc, char* argv[])
          }
         if(mousedown == 1){
             gr[(my/SIZE)][(mx/SIZE)] = 1;
-            //uncomment this line for some wonderous things 
             for(int i=my;i<(400)+my;i=i+SIZE){
-                //gr[MOD(i/SIZE,GHEIGHT)][MOD(mx/SIZE,GWIDTH)]=1;
-                //rect(screen,MOD(mx/SIZE * SIZE,WIDTH),MOD(i/SIZE * SIZE,HEIGHT),SIZE,SIZE,250,0,0);
+                gr[MOD(i/SIZE,GHEIGHT)][MOD(mx/SIZE,GWIDTH)]=1;
+                rect(screen,MOD(mx/SIZE * SIZE,WIDTH),MOD(i/SIZE * SIZE,HEIGHT),SIZE,SIZE,250,0,0);
             }
             rect(screen,(mx/SIZE)*SIZE,(my/SIZE)*SIZE,SIZE,SIZE,250,0,0);
         }
