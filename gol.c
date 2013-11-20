@@ -1,6 +1,5 @@
 #include <stdio.h> 
 #include "SDL/SDL.h"
-#include <pthread.h>
 #include <errno.h>
 
 //#define WIDTH 800
@@ -121,10 +120,7 @@ int main( int argc, char* argv[])
         }
     int workers = 2;
     if (pause == -1){
-        int dy = GHEIGHT/workers;
-        for(y = 0;y < GHEIGHT;y+=dy){
-            generate_region(screen, y, dy, gr, nw);
-        }
+        generate_region(screen, 0, GHEIGHT, gr, nw);
 
         temp = gr;
         gr = nw;
