@@ -9,10 +9,10 @@ GOL_OBJS = gol.c gol-threaded.c
 all: gol gol-threaded
 
 gol: gol.c
-	$(CC) $(CFLAGS) -o $(GOL) gol.c
+	$(CC) -o $(GOL) gol.c $(CFLAGS)  
 
 gol-threaded: gol-threaded.c
-	$(CC) $(CFLAGS) -o $(GOLTHREAD) gol-threaded.c
+	$(CC) -o $(GOLTHREAD) gol-threaded.c $(CFLAGS) 
 
 clean: 
 	rm -f gol gol.o
